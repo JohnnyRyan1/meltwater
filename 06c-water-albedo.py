@@ -13,7 +13,6 @@ import rioxarray as rio
 import xarray as xr
 import numpy as np
 import pandas as pd
-from scipy import stats
 
 # Define path
 path1 = '/Users/jr555/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/data/'
@@ -22,7 +21,7 @@ path1 = '/Users/jr555/Library/CloudStorage/OneDrive-DukeUniversity/research/hydr
 year = str(2019)
 
 # Define sample size
-sample_size = 100
+sample_size = 2000
 
 # Read raster data
 sw = rio.open_rasterio(path1 + 'zhang/surface_water_mask_' + year +'_500m.tif')
@@ -51,15 +50,27 @@ sw = xr.where(mask_match, sw, np.nan)
 # Bin forcing into elevations
 elevations = np.arange(0, 3600, 200)
 
+# Compute water area by elevation
+water_area, ice_area = [], []
+for e in range(len(elevations) - 1):
+    elevation_mask = (elev_match > elevations[e]) &\
+        (elev_match < elevations[e+1])
+    water_area.append(np.nansum(sw.values[elevation_mask.values])*0.25)
+    ice_area.append(elevation_mask.values.sum()*0.25)
+
+# Make a DataFrame
+df = pd.DataFrame(list(zip(elevations, water_area, ice_area)), 
+                  columns=['elevation', 'water_area', 'ice_area'])
+
+# Export
+df.to_csv(path1 + 'scales/water-area.csv', index=False)
+
 #%%
 
 # Define window size from 1 to 50 km
 windows = np.array((1, 2, 3, 4, 5, 6, 8, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90,
                     100))
 kernel_size = (windows[:-1] + windows[1:])**2
-
-# Find cells with >50% water
-x, y = np.where(sw[:,:,0] > 0.5)
 
 # Define lists
 final_data_list = []
@@ -133,12 +144,11 @@ for i in range(len(final_data_list)):
     group = df.groupby('bin', observed=True)['std'].mean()
     stats_list.append(group.values)
 
-#%%
 # Make a DataFrame
 df = pd.DataFrame(stats_list)
 
 # Export
-df.to_csv(path1 + 'scales/water.csv')
+df.to_csv(path1 + 'scales/water-2000.csv', index=False)
 
     
 #%%

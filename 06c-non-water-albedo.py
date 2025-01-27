@@ -20,7 +20,7 @@ from scipy.signal import convolve2d
 year = str(2019)
 
 # Define sample size
-sample_size = 100
+sample_size = 2000
 
 # Define path
 path1 = '/Users/jr555/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/data/'
@@ -52,8 +52,6 @@ modis = mcd
 # Mask
 modis = xr.where(mask_match, modis, np.nan)
 sw = xr.where(mask_match, sw, np.nan)
-
-#%%
 
 # Define grid
 grid = sw[:,:,0].values
@@ -162,12 +160,11 @@ for i in range(len(final_data_list)):
     group = df.groupby('bin', observed=True)['std'].mean()
     stats_list.append(group.values)
 
-#%%
 # Make a DataFrame
 df = pd.DataFrame(stats_list)
 
 # Export
-df.to_csv(path1 + 'scales/non.csv')
+df.to_csv(path1 + 'scales/non-water-2000.csv', index=False)
 
 
 #%%

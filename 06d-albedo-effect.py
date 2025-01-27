@@ -10,12 +10,17 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+# Define user
+user = 'johnnyryan'
+
 # Define path
-path1 = '/Users/jr555/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/data/'
+path1 = '/Users/' + user + '/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/data/'
 
 # Import data
-water = pd.read_csv(path1 + 'scales/water.csv')
-non = pd.read_csv(path1 + 'scales/non.csv')
+water = pd.read_csv(path1 + 'scales/water-2000.csv')
+non = pd.read_csv(path1 + 'scales/non-water-2000.csv')
+area = pd.read_csv(path1 + 'scales/water-area.csv')
 
 # Define windows
 windows = np.array((1, 2, 3, 4, 5, 6, 8, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90,
@@ -28,60 +33,68 @@ elevations = np.arange(0, 3600, 200)
 water_mid = water.iloc[:, 3:8].mean(axis=1)
 non_mid = non.iloc[:, 3:8].mean(axis=1)
 
-# By elevation
-1 - (non.iloc[10, :] / water.iloc[10,:])
-
-#%%
-
-# Report stats
-1 - (non_mid[2:5].mean() / water_mid[2:5].mean())
-
-1 - (non_mid[15:].mean() / water_mid[15:].mean())
-
-
-
 #%%
 
 """
 P1
 """
-
 # Define colour map
-c1 = '#E05861'
-c2 = '#616E96'
-c3 = '#F8A557'
-c4 = '#3CBEDD'
+colormap = plt.get_cmap('viridis', water.shape[1])
+v = '#440154FF'
 
 # Plot the area-frequency plot
 fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(12,4), 
                                     layout='constrained')
 
 
-ax1.plot(windows[:-1], 1- (non_mid / water_mid),
-         color=c1, lw=2, label='Elevation = 600-1600 m')
-ax1.set_xlim(0, 90)
-#ax1.plot(windows[:-1], water['std'] / water['std'].max(), label='All grid cells',
-#         color=c2, lw=2)
+ax1.barh(range(len(area)), area['water_area'], align='edge', alpha=0.5, color=v, edgecolor='k')
+ax1.set_ylim(0,17)
+ax1.grid(linestyle='dotted', lw=1, zorder=1)
+ax1.tick_params(axis='both', which='major', labelsize=13)
+ax1.set_yticks(np.arange(0, len(area), 2))
+ax1.set_yticklabels(elevations[:-1][::2])
 
-#ax1.set_ylim(0, 0.7)
+for i in range(non.shape[0]):
+    ax2.plot(1 - (non.iloc[i, :] / water.iloc[i,:]), elevations[:-1],
+             color=colormap(i), lw=2, alpha=0.5, zorder=0)
+#ax2.scatter(0.15, 1000, s=100, zorder=1, color=v)
+ax2.set_xlim(0, 0.6)
+ax2.set_ylim(0, 3200)
 
-ax2.plot(1 - (non.iloc[10, :] / water.iloc[10,:]), elevations,
-         color=c2, lw=2, label='Length scale = 25 km')
-
-ax1.set_xlabel("Length scale (km)", fontsize=12)
-ax1.set_ylabel("Albedo variability due to \n meltwater ponding", fontsize=12)
-ax1.legend(fontsize=12, loc=1)
+ax1.set_xlabel("Water area (km$^2$)", fontsize=14)
+ax1.set_ylabel("Elevation", fontsize=14)
 ax1.grid(True, which="both", linestyle="--", linewidth=0.5, zorder=0)
 ax1.tick_params(axis='both', which='major', labelsize=12)
 
-ax2.set_xlabel("Albedo variability due to meltwater ponding", fontsize=12)
-ax2.set_ylabel("Elevation", fontsize=12)
-ax2.legend(fontsize=12, loc=1)
+ax2.set_xlabel("Albedo variability due to meltwater ponding", fontsize=14)
 ax2.grid(True, which="both", linestyle="--", linewidth=0.5, zorder=0)
 ax2.tick_params(axis='both', which='major', labelsize=12)
+ax2.set_yticklabels([])
+
+from matplotlib.lines import Line2D
+
+custom_lines = [Line2D([0], [0], color=colormap(0.), lw=2),
+                Line2D([0], [0], color=colormap(.5), lw=2),
+                Line2D([0], [0], color=colormap(1.), lw=2)]
+
+ax2.legend(custom_lines, ['1 km', '25 km', '100 km'], fontsize=14)
+
+ax1.text(0.03, 0.89, "a", fontsize=24, transform=ax1.transAxes)
+ax2.text(0.03, 0.87, "b", fontsize=24, transform=ax2.transAxes)
 
 #%%
 
+"""
+Note:
+    Ryan et al. (2018) found that meltwater ponding accounted for 15% of albedo
+    variability at 1000 m and length scale 25 km.
+    
+"""
+print('We find %.1f %%' %(((1 - (non.iloc[10, :] / water.iloc[10,:]))[5])*100))
+
+
+
+#%%
 
 # Import data
 water_albedo_2018 = pd.read_csv(path1 + 'albedo-effects-2018.csv')
