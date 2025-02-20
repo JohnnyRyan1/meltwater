@@ -11,7 +11,7 @@ import geopandas as gpd
 import glob
 
 # Define path to files
-path = '/Users/jr555/Documents/research/hydrology/drone/20160705/Polys/'
+path = '/Users/jr555/Documents/research/hydrology/drone/20150721/Polys/'
 
 # Define files
 files = sorted(glob.glob(path + '*.shp'))
@@ -32,6 +32,6 @@ for shp in files:
 gdf = gpd.GeoDataFrame(geometries, columns=['geometry'], geometry='geometry',
                        crs='EPSG:3413')
 
-gdf.to_file('/Users/jr555/Documents/research/hydrology/drone/20160705/wq7-20160705-polys.shp')
+gdf.to_file('/Users/jr555/Documents/research/hydrology/drone/20150721/wq7-20150721-polys.shp')
 
 #%%

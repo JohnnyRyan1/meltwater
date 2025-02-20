@@ -13,6 +13,7 @@ import rioxarray as rio
 import xarray as xr
 import numpy as np
 import pandas as pd
+from scipy.signal import convolve2d
 
 # Define path
 path1 = '/Users/jr555/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/data/'
@@ -50,6 +51,22 @@ sw = xr.where(mask_match, sw, np.nan)
 # Bin forcing into elevations
 elevations = np.arange(0, 3600, 200)
 
+# Create a mask for NaN values
+nan_mask = np.isnan(modis[:,:,0].values)
+
+# Define a 5x5 kernel for the sliding window
+kernel = np.ones((5, 5), dtype=int)
+
+# Apply convolution to count NaNs in each 5x5 block
+nan_count = convolve2d(nan_mask, kernel, mode="same")
+
+# Find locations where the 5x5 block contains no NaNs (count == 0)
+no_nan_blocks = (nan_count == 0)
+
+#%%
+
+# OPTIONAL
+
 # Compute water area by elevation
 water_area, ice_area = [], []
 for e in range(len(elevations) - 1):
@@ -86,7 +103,7 @@ for w in range(len(windows[:-1])):
         
         # Get first elevation band
         band = (elev_match > elevations[e]) & (elev_match < elevations[e+1]) &\
-            (mask_match.values == 1)
+            (no_nan_blocks == True) & (mask_match.values == 1)
         
         # Find cells
         x, y = np.where(band == 1)

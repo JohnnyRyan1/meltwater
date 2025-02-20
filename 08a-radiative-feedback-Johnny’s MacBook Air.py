@@ -19,6 +19,10 @@ path1 = '/Users/jr555/Library/CloudStorage/OneDrive-DukeUniversity/research/hydr
 sw_2018 = xr.open_dataset(path1 + 'zhang/surface_water_mask_2018_1km.tif')
 sw_2019 = xr.open_dataset(path1 + 'zhang/surface_water_mask_2019_1km.tif')
 
+# Regions
+regions_file = xr.open_dataset(path1 + 'temp_albedo_summer_climatologies.nc')
+regions = regions_file['regions']
+
 # Set NaNs to zero
 sw_2018 = sw_2018.fillna(0)
 sw_2019 = sw_2019.fillna(0)
@@ -40,14 +44,17 @@ merra_climatology[merra_climatology == 0] = np.nan
 elevations = np.arange(0, 3600, 200)
 
 # Import data
-water_albedo_2018 = pd.read_csv(path1 + 'albedo-effects-2018.csv')
-water_albedo_2019 = pd.read_csv(path1 + 'albedo-effects-2019.csv')
+slopes_2018 = pd.read_csv(path1 + 'effects/albedo-effects-slope-2018.csv')
+slopes_2019 = pd.read_csv(path1 + 'effects/albedo-effects-slope-2019.csv')
 
-# Combine datasets
-water_albedo = pd.concat([water_albedo_2018, water_albedo_2019])
+se_2018 = pd.read_csv(path1 + 'effects/albedo-effects-se-2018.csv')
+se_2019 = pd.read_csv(path1 + 'effects/albedo-effects-se-2019.csv')
 
 # Water effect
-water_effect, effect_uncert = np.abs(water_albedo['slope'].mean()), water_albedo['slope'].std()
+slopes = (slopes_2018 + slopes_2019) / 2
+se = (se_2018 + se_2019) / 2
+water_effect = slopes.iloc[1,1] * -1
+effect_uncert = se.iloc[1,1] * -1
 
 # Other radiative forcing processes
 other = xr.open_dataset(path1 + 'final-surface-forcing-grids.nc')
@@ -217,9 +224,23 @@ P1
 """
 
 # Mean radiative forcing between 0-1600 m
-elevation_mask = (mask == True) & (ismip_1km['SRF'].values > 0) & (ismip_1km['SRF'].values <= 1600)
-print(np.nanmean(swnet_mean_2018[elevation_mask]))
+elevation_mask = (mask == True) & (ismip_1km['SRF'].values > 1000) & (ismip_1km['SRF'].values <= 1800)
+
 print(np.nanmean(swnet_mean_2019[elevation_mask]))
+print(np.nanmean(swnet_mean_2019_min[elevation_mask]))
+print(np.nanmean(swnet_mean_2019_max[elevation_mask]))
+
+elevation_mask = (mask == True) & (ismip_1km['SRF'].values <=600)
+print(np.nanmean(swnet_mean_2019[elevation_mask]))
+print(np.nanmean(swnet_mean_2019_min[elevation_mask]))
+print(np.nanmean(swnet_mean_2019_max[elevation_mask]))
+
+elevation_mask = (mask == True) & (ismip_1km['SRF'].values > 2000)
+print(np.nanmean(swnet_mean_2019[elevation_mask]))
+print(np.nanmean(swnet_mean_2019_min[elevation_mask]))
+print(np.nanmean(swnet_mean_2019_max[elevation_mask]))
+
+print(np.nanmean(swnet_mean_2018[elevation_mask]))
 
 #%%
 
@@ -232,15 +253,44 @@ print(df['energy_pj_2018'].sum())
 print(df['energy_pj_2019'].sum())
 
 #%%
-"""
-P3
+
 
 """
+P3 - radiative forcing in the dark zone.
+"""
+r_list = np.arange(1, 9)
 
-swnet_diff = np.nanmean(swnet_mean_2019) - np.nanmean(swnet_mean_2018)
-temp_diff = np.nanmean(merra['t2m'].values[:,:,17]) - np.nanmean(merra['t2m'].values[:,:,16])
-energy_2018 = np.nansum(((swnet_mean_2018 * 1000000) * 86400) / 1e15)
-energy_2019 = np.nansum(((swnet_mean_2019 * 1000000) * 86400) / 1e15)
+forcing = []
+for r in r_list:
+    print(r)
+    data_list = []
+    for e in range(len(elevations) - 1):
+        elevation_mask = (mask == True) & (ismip_1km['SRF'].values > elevations[e]) &\
+            (ismip_1km['SRF'].values < elevations[e+1]) & (regions == r)
+        data_list.append(np.nanmean(swnet_mean_2019[elevation_mask]))
+    forcing.append(data_list)
+    
+df = pd.DataFrame(forcing)
+
+#%%
+
+# Define colour map
+cmap = plt.get_cmap('Accent')
+
+# Extract the first 8 distinct colors
+colors = [cmap(i) for i in range(8)]
+
+# Plot the area-frequency plot
+fig, (ax1) = plt.subplots(nrows=1, ncols=1, figsize=(4,4), 
+                                    layout='constrained')
+
+for i, color in enumerate(colors):
+    ax1.plot(df.iloc[i, :], elevations[:-1],
+             color=color, lw=2, alpha=0.5, zorder=0, label=f'Sector {i+1}')
+ax1.legend()
+
+
+#%%
 
 snowline_2018 = np.nansum(((other['snowline'][:,:,16].values.astype(float) * 1000000) * 86400) / 1e15)
 snowline_2019 = np.nansum(((other['snowline'][:,:,17].values.astype(float) * 1000000) * 86400) / 1e15)
@@ -250,6 +300,29 @@ snow_2019 = np.nansum(((other['snow'][:,:,17].values.astype(float) * 1000000) * 
 
 ice_2018 = np.nansum(((other['ice'][:,:,16].values.astype(float) * 1000000) * 86400) / 1e15)
 ice_2019 = np.nansum(((other['ice'][:,:,17].values.astype(float) * 1000000) * 86400) / 1e15)
+
+bulk = snowline_2019+snow_2019+ice_2019
+
+print('Bulk radiative forcing is %.1f PJ d-1' % (bulk))
+
+print('Meltwater ponding accounted for %.1f %%' % ((16.1/2176)*100))
+
+print('Snowline contributed %.1f %%' % ((snowline_2019 / bulk)*100))
+print('Snow albedo contributed %.1f %%' % ((snow_2019 / bulk)*100))
+print('Glacier ice albedo contributed %.1f %%' % ((ice_2019 / bulk)*100))
+
+
+
+#%%
+"""
+P3
+
+"""
+
+swnet_diff = np.nanmean(swnet_mean_2019) - np.nanmean(swnet_mean_2018)
+temp_diff = np.nanmean(merra['t2m'].values[:,:,17]) - np.nanmean(merra['t2m'].values[:,:,16])
+energy_2018 = np.nansum(((swnet_mean_2018 * 1000000) * 86400) / 1e15)
+energy_2019 = np.nansum(((swnet_mean_2019 * 1000000) * 86400) / 1e15)
 
 # Compute feedback
 df['temp_change'] = df['temp_2019'] - df['temp_2018']

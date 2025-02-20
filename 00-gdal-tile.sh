@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Directory containing your input raster files
-input_dir="/Users/jr555/Documents/research/hydrology/drone/20160705/Reprojected"
-output_dir="/Users/jr555/Documents/research/hydrology/drone/20160705/Orthomosaics"
+input_dir="/Users/jr555/Documents/research/hydrology/drone/russell/Reprojected"
+output_dir="/Users/jr555/Documents/research/hydrology/drone/russell/Orthomosaics"
 
 # Loop through each .tif file in the input directory
 for file in "$input_dir"/*.tif; do

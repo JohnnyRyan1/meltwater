@@ -51,6 +51,14 @@ data_array_reprojected = data_variable.rio.reproject("EPSG:3413")
 
 data_array_reprojected.rio.to_raster(path + 'MCD43A3.A2015202.h16v02.061.2021329232024.tif')
 
+#%%
+
+# Import ISMIP 1 km grid
+ismip_1km = xr.open_dataset(path1 + '1km-ISMIP6-GIMP.nc')
+mask = ismip_1km['SRF']
+mask = mask.rio.write_crs('EPSG:3413')
+mask.rio.to_raster(path1 + '1km-ISMIP-ELE.tif')
+
 
 
 

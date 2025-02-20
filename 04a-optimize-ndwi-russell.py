@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Optimize NDWI threshold.
+Optimize NDWI threshold for Russell Glacier
 
 """
 
@@ -21,16 +21,18 @@ from tqdm import tqdm
 from joblib import Parallel, delayed
 from sklearn.metrics import precision_score
 from sklearn.metrics import accuracy_score
+from sklearn.metrics import recall_score
 from sklearn.metrics import f1_score
+import matplotlib.pyplot as plt
 
 #%%
 
 # Define training shapefiles
-water_files = sorted(glob.glob('/Users/jr555/Documents/research/hydrology/evaluation-water/2016/*.shp'))
-ice_files = sorted(glob.glob('/Users/jr555/Documents/research/hydrology/evaluation-ice/2016/*.shp'))
+water_files = sorted(glob.glob('/Users/jr555/Documents/research/hydrology/evaluation-water/2015-site1/*.shp'))
+ice_files = sorted(glob.glob('/Users/jr555/Documents/research/hydrology/evaluation-ice/2015-site1/*.shp'))
 
 # Define some paths
-raster_path = '/Users/jr555/Documents/research/hydrology/drone/20160705/Orthomosaics/'
+raster_path = '/Users/jr555/Documents/research/hydrology/drone/russell/Orthomosaics/'
 
 # Define desired superpixel area size
 super_pixel_area = 10
@@ -58,7 +60,7 @@ def segment(imgname,numsuperpixels,compactness,doRGBtoLAB):
 	if len(dims) > 1:
 		c = dims[2]
 		img = img.transpose(2,0,1)
-		print(c, "channels")
+		#print(c, "channels")
 	
 	#--------------------------------------------------------------
 	# Reshape image to a single dimensional vector
@@ -75,15 +77,15 @@ def segment(imgname,numsuperpixels,compactness,doRGBtoLAB):
 	pnumlabels = ffibuilder.cast("int*", ffibuilder.from_buffer(numlabels))
 
 	
-	start = timer()
+	#start = timer()
 	SNIC_main(pinp,w,h,c,numsuperpixels,compactness,doRGBtoLAB,plabels,pnumlabels)
-	end = timer()
+	#end = timer()
 
 	#--------------------------------------------------------------
 	# Collect labels
 	#--------------------------------------------------------------
-	print("number of superpixels: ", numlabels[0])
-	print("time taken in seconds: ", end-start)
+	#print("number of superpixels: ", numlabels[0])
+	#print("time taken in seconds: ", end-start)
 
 	return labels.reshape(h,w),numlabels[0]
 
@@ -112,6 +114,7 @@ ice_labels = []
 ice_ndwi = []
 
 for i in range(len(water_files)):
+    print(i)
     
     # Get the path and filename separately
     infilepath, infilename = os.path.split(water_files[i])
@@ -149,7 +152,6 @@ for i in range(len(water_files)):
     # Extract RGB channels beforehand to avoid redundant access
     red_channel, green_channel, blue_channel = image.values
     
-    
     # Parallel processing for each label
     results = Parallel(n_jobs=-1)(delayed(compute_median_for_label)(label) 
                                   for label in tqdm(np.unique(labels), desc="Processing"))
@@ -172,8 +174,8 @@ for i in range(len(water_files)):
     w_labels = []
     w_ndwi = []
     # Make training data for water
-    for i in range(water.shape[0]):
-        ndwi_values = ndwi_da.rio.clip([water.geometry.iloc[i]], water.crs).values.flatten()
+    for w in range(water.shape[0]):
+        ndwi_values = ndwi_da.rio.clip([water.geometry.iloc[w]], water.crs).values.flatten()
         ndwi_values = ndwi_values[~np.isnan(ndwi_values)]
         w_labels.extend([1] * ndwi_values.shape[0])
         w_ndwi.extend(list(ndwi_values))
@@ -181,8 +183,8 @@ for i in range(len(water_files)):
     i_labels = []
     i_ndwi = []
     # Make training data for ice
-    for i in range(ice.shape[0]):
-        ndwi_values = ndwi_da.rio.clip([ice.geometry.iloc[i]], ice.crs).values.flatten()
+    for j in range(ice.shape[0]):
+        ndwi_values = ndwi_da.rio.clip([ice.geometry.iloc[j]], ice.crs).values.flatten()
         ndwi_values = ndwi_values[~np.isnan(ndwi_values)]
         i_labels.extend([0] * ndwi_values.shape[0])
         i_ndwi.extend(list(ndwi_values))
@@ -199,9 +201,11 @@ ndwi = water_ndwi + ice_ndwi
 df = pd.DataFrame(list(zip(labels, ndwi)), columns=['y_true', 'X'])
 
 threshold = np.arange(0, 0.31, 0.005)
+
 f1 = []
 precision = []
 accuracy = []
+recall = []
 for t in threshold:
     
     # Make predictions
@@ -211,21 +215,15 @@ for t in threshold:
     f1.append(f1_score(df['y_true'], df['y_pred']))
     precision.append(precision_score(df['y_true'], df['y_pred']))
     accuracy.append(accuracy_score(df['y_true'], df['y_pred']))
+    recall.append(recall_score(df['y_true'], df['y_pred']))
     
 # New DataFrame
-new_df = pd.DataFrame(list(zip(threshold, f1, precision, accuracy)), 
-                      columns=['threshold', 'f1', 'precision', 'accuracy'])
+new_df = pd.DataFrame(list(zip(threshold, f1, precision, accuracy, recall)), 
+                      columns=['threshold', 'f1', 'precision', 'accuracy',
+                               'recall'])
 
 # Save
-new_df.to_csv('/Users/jr555/Documents/research/hydrology/ndwi-thresholds-2016.csv')
-
-
-
-
-
-#%%
-
-
+new_df.to_csv('/Users/jr555/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/data/ndwi-thresholds-russell.csv')
 
 #%%
 

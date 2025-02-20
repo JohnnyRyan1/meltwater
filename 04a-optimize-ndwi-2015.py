@@ -21,7 +21,9 @@ from tqdm import tqdm
 from joblib import Parallel, delayed
 from sklearn.metrics import precision_score
 from sklearn.metrics import accuracy_score
+from sklearn.metrics import recall_score
 from sklearn.metrics import f1_score
+import matplotlib.pyplot as plt
 
 #%%
 
@@ -203,6 +205,7 @@ threshold = np.arange(0, 0.31, 0.005)
 f1 = []
 precision = []
 accuracy = []
+recall = []
 for t in threshold:
     
     # Make predictions
@@ -212,20 +215,46 @@ for t in threshold:
     f1.append(f1_score(df['y_true'], df['y_pred']))
     precision.append(precision_score(df['y_true'], df['y_pred']))
     accuracy.append(accuracy_score(df['y_true'], df['y_pred']))
+    recall.append(recall_score(df['y_true'], df['y_pred']))
     
 # New DataFrame
-new_df = pd.DataFrame(list(zip(threshold, f1, precision, accuracy)), 
-                      columns=['threshold', 'f1', 'precision', 'accuracy'])
+new_df = pd.DataFrame(list(zip(threshold, f1, precision, accuracy, recall)), 
+                      columns=['threshold', 'f1', 'precision', 'accuracy',
+                               'recall'])
 
 # Save
-new_df.to_csv('/Users/jr555/Documents/research/hydrology/ndwi-thresholds-2015.csv')
-
-
-
+new_df.to_csv('/Users/jr555/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/data/ndwi-thresholds-2015.csv')
 
 
 #%%
 
+# Import data
+new_df = pd.read_csv('/Users/jr555/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/data/ndwi-thresholds-2015.csv')
+
+# Define colour map
+c1 = '#E05861'
+c2 = '#616E96'
+c3 = '#F8A557'
+c4 = '#3CBEDD'
+
+# Plot
+fig, (ax1) = plt.subplots(nrows=1, ncols=1, figsize=(7,4), 
+                                    layout='constrained')
+
+ax1.plot(new_df['threshold'], new_df['recall'], lw=2, zorder=0,
+         label='Recall', color=c1)
+ax1.plot(new_df['threshold'], new_df['accuracy'], lw=2, zorder=0, 
+         label='Accuracy', color=c2)
+ax1.plot(new_df['threshold'], new_df['precision'], lw=2, zorder=0,
+         label='Precision', color=c3)
+
+ax1.set_xlabel("NDWI threshold", fontsize=12)
+ax1.grid(True, which="both", linestyle="--", linewidth=0.5, zorder=0)
+ax1.tick_params(axis='both', which='major', labelsize=12)
+ax1.set_ylabel("Score", fontsize=12)
+ax1.set_xlim(0, 0.3)
+ax1.set_ylim(0.4, 1.03)
+ax1.legend(loc=3, fontsize=12)
 
 
 #%%

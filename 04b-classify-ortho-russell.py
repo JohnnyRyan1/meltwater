@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 
-Classify WQ7 orthomosaic
+Classify Russell orthomosaic
 
 """
 
@@ -24,13 +24,14 @@ from joblib import Parallel, delayed
 #%%
 
 # Define path
-path = '/Users/jr555/Documents/research/hydrology/'
+path1 = '/Users/jr555/Documents/research/hydrology/'
+path2 = '/Users/jr555/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/data/'
 
 # Define files
-files = sorted(glob.glob(path + 'drone/20150721/Orthomosaics/*.tif'))
+files = sorted(glob.glob(path1 + 'drone/russell/Orthomosaics/*.tif'))
 
 # Read
-df = pd.read_csv(path + 'ndwi-thresholds-2015.csv')
+df = pd.read_csv(path2 + 'ndwi-thresholds-russell.csv')
 
 # Threhold defined as the highest combination of F1-score and precision
 ndwi_threshold = df['threshold'][np.argmax(df['accuracy'] + df['precision'])]
@@ -61,7 +62,7 @@ def segment(imgname,numsuperpixels,compactness,doRGBtoLAB):
 	if len(dims) > 1:
 		c = dims[2]
 		img = img.transpose(2,0,1)
-		print(c, "channels")
+		#print(c, "channels")
 	
 	#--------------------------------------------------------------
 	# Reshape image to a single dimensional vector
@@ -78,15 +79,15 @@ def segment(imgname,numsuperpixels,compactness,doRGBtoLAB):
 	pnumlabels = ffibuilder.cast("int*", ffibuilder.from_buffer(numlabels))
 
 	
-	start = timer()
+	#start = timer()
 	SNIC_main(pinp,w,h,c,numsuperpixels,compactness,doRGBtoLAB,plabels,pnumlabels)
-	end = timer()
+	#end = timer()
 
 	#--------------------------------------------------------------
 	# Collect labels
 	#--------------------------------------------------------------
-	print("number of superpixels: ", numlabels[0])
-	print("time taken in seconds: ", end-start)
+	#print("number of superpixels: ", numlabels[0])
+	#print("time taken in seconds: ", end-start)
 
 	return labels.reshape(h,w),numlabels[0]
 
@@ -110,6 +111,7 @@ def compute_median_for_label(label):
 
 #%%
 for file in files:
+    print(file)
     
     # Get the path and filename separately
     infilepath, infilename = os.path.split(file)
@@ -117,7 +119,7 @@ for file in files:
     # Get the short name (filename without extension)
     infileshortname, extension = os.path.splitext(infilename)
     
-    if os.path.exists(path + '/drone/20150721/Classified-v2/' + infileshortname + '.tif'):
+    if os.path.exists(path1 + 'drone/russell/Classified/' + infileshortname + '.tif'):
         pass
     else:
         
@@ -171,7 +173,7 @@ for file in files:
             classified = xr.where(ndwi_da > ndwi_threshold, 1, xr.where(ndwi_da <= ndwi_threshold, 0, 2))
             classified = classified.astype('uint8')
             classified = classified.rio.write_crs("EPSG:3413")
-            classified.rio.to_raster(path + '/drone/20150721/Classified-v2/' + infileshortname + '.tif')
+            classified.rio.to_raster(path1 + 'drone/russell/Classified/' + infileshortname + '.tif')
             
             # Vectorize
             classified = xr.where(classified == 2, 0, classified)
@@ -182,7 +184,7 @@ for file in files:
             gdf = gdf.set_crs("EPSG:3413")
             
             # Save to file
-            gdf.to_file(path + 'drone/20150721/Polys-v2/' + infileshortname + '.shp')
+            gdf.to_file(path1 + 'drone/russell/Polys/' + infileshortname + '.shp')
             
         
         
