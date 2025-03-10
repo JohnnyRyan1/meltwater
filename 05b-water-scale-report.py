@@ -12,7 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Define user
-user = ' johnnyryan'
+user = 'jr555'
 
 # Define path
 path1 = '/Users/' + user + '/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/data/'
@@ -20,11 +20,13 @@ path2 = '/Users/' + user + '/Library/CloudStorage/OneDrive-DukeUniversity/resear
 
 # Define path to files
 drone = gpd.read_file(path1 + 'drone/wq7-20150721-polys-within.shp')
+russell = gpd.read_file(path1 + 'drone/rus-20150712-polys.shp')
 zhang_2018 = gpd.read_file(path1 + 'zhang/zhang_polys_2018_wq7.shp')
 zhang_2019 = gpd.read_file(path1 + 'zhang/zhang_polys_2019_wq7.shp')
 
 # Compute areas
 drone['area'] = drone.area
+russell['area'] = russell.area
 zhang_2018['area'] = zhang_2018.area
 zhang_2019['area'] = zhang_2019.area
 
@@ -35,6 +37,11 @@ classified = rio.open_rasterio(path1 + 'drone/wq7-20150721-classified-within.tif
 non_nan_count_total = classified.count()
 study_area = non_nan_count_total * classified.rio.transform()[0] * classified.rio.transform()[0]
 study_area_km2 = study_area / 1000000
+
+# Area of Russell/Isunguata
+russell_total = gpd.read_file(path1 + 'drone/outline.shp')
+
+1721 + 1460 + 1745 + 1683 + 1442 + 1681
 
 #%%
 
@@ -48,6 +55,7 @@ print('Fraction of water in WQ7 in 2018 from Zhang et al. = %.2f %%' %((np.sum(z
 print('Fraction of water in WQ7 in 2019 from Zhang et al. = %.2f %%' %((np.sum(zhang_2019['area'] / 1000000)/study_area_km2)*100))
 
 print('Fraction of water in WQ7 in 2015 from Ryan et al. = %.2f %%' %((np.sum(drone['area'] / 1000000)/study_area_km2)*100))
+print('Fraction of water at Russell in 2015 from Ryan et al. = %.3f %%' %((np.sum(russell['area'])/russell_total.area.iloc[0])))
 
 #%%
 
@@ -56,6 +64,7 @@ bins = np.logspace(np.log10(drone['area'].min()), np.log10(drone['area'].max()),
 hist1, bin_edges = np.histogram(drone['area'], bins=bins)  # Use density=True for probability density
 hist2, bin_edges = np.histogram(zhang_2019['area'], bins=bins)  # Use density=True for probability density
 hist3, bin_edges = np.histogram(zhang_2018['area'], bins=bins)  # Use density=True for probability density
+hist4, bin_edges = np.histogram(russell['area'], bins=bins)
 
 # Calculate bin centers
 bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
@@ -85,7 +94,7 @@ ax1.legend(fontsize=11)
 ax1.grid(True, which="both", linestyle="--", linewidth=0.5, zorder=0)
 ax1.tick_params(axis='both', which='major', labelsize=12)
 ax1.set_xlim(0.2, 300000)
-plt.savefig(path2 + 'fig5-meltwater-histograms.png', dpi=300)
+#plt.savefig(path2 + 'fig5-meltwater-histograms.png', dpi=300)
 
 #%%
 

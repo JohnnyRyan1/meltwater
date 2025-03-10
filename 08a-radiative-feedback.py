@@ -232,13 +232,13 @@ ax3.set_yticklabels([])
 ax3.legend(loc=1, fontsize=12)
 
 ax4.plot(df_regions.iloc[0, :], elevations[:-1],
-             color=c4, lw=3, alpha=1, zorder=0, label='N')
+             color=c4, lw=2, alpha=1, zorder=0, label='N')
 ax4.fill_betweenx(elevations[:-1],
                  df_regions_min.iloc[0, :],
                  df_regions_max.iloc[0, :],
                  zorder=1, color=c4, alpha=0.2)
 ax4.plot(df_regions.iloc[5, :], elevations[:-1],
-             color=c3, lw=3, alpha=1, zorder=0, label='SW')
+             color=c3, lw=2, alpha=1, zorder=0, label='SW')
 ax4.fill_betweenx(elevations[:-1],
                  df_regions_min.iloc[5, :],
                  df_regions_max.iloc[5, :],
@@ -292,10 +292,10 @@ ax4.text(0.03, 0.91, "d", fontsize=20, transform=ax4.transAxes, zorder=1)
 ax5.text(0.03, 0.91, "e", fontsize=20, transform=ax5.transAxes, zorder=1)
 ax6.text(0.03, 0.91, "f", fontsize=20, transform=ax6.transAxes, zorder=1)
 
-ax4.text(0.83, 0.18, "site 1", fontsize=12, transform=ax4.transAxes, zorder=1)
+ax4.text(0.83, 0.14, "site 1", fontsize=12, transform=ax4.transAxes, zorder=1)
 ax4.text(0.83, 0.39, "site 2", fontsize=12, transform=ax4.transAxes, zorder=1)
 
-plt.savefig(path2 + 'fig1-radiative-forcing.png', dpi=300)
+plt.savefig(path2 + 'fig-3-radiative-forcing.png', dpi=300)
 
 #%%
 
@@ -305,21 +305,27 @@ P1a
 """
 
 # Mean radiative forcing between 0-1600 m
-elevation_mask = (mask == True) & (ismip_1km['SRF'].values > 1000) & (ismip_1km['SRF'].values <= 1800)
+elevation_mask = (mask == True) & (ismip_1km['SRF'].values > 1000) & (ismip_1km['SRF'].values <= 2000)
 
 print(np.nanmean(swnet_mean_2019[elevation_mask]))
 print(np.nanmean(swnet_mean_2019_min[elevation_mask]))
 print(np.nanmean(swnet_mean_2019_max[elevation_mask]))
+
+print('\n')
 
 elevation_mask = (mask == True) & (ismip_1km['SRF'].values <=600)
 print(np.nanmean(swnet_mean_2019[elevation_mask]))
 print(np.nanmean(swnet_mean_2019_min[elevation_mask]))
 print(np.nanmean(swnet_mean_2019_max[elevation_mask]))
 
+print('\n')
+
 elevation_mask = (mask == True) & (ismip_1km['SRF'].values > 2000)
 print(np.nanmean(swnet_mean_2019[elevation_mask]))
 print(np.nanmean(swnet_mean_2019_min[elevation_mask]))
 print(np.nanmean(swnet_mean_2019_max[elevation_mask]))
+
+print('\n')
 
 print(np.nanmean(swnet_mean_2018[elevation_mask]))
 
@@ -335,7 +341,29 @@ print(np.nanmean(swnet_mean_2019[elevation_mask]))
 print(np.nanmean(swnet_mean_2019_min[elevation_mask]))
 print(np.nanmean(swnet_mean_2019_max[elevation_mask]))
 
+print('\n')
 
+elevation_mask = (mask == True) & (ismip_1km['SRF'].values > 1600) &\
+    (ismip_1km['SRF'].values <= 1800) & (regions == 6)
+print(np.nanmean(swnet_mean_2019[elevation_mask]))
+print(np.nanmean(swnet_mean_2019_min[elevation_mask]))
+print(np.nanmean(swnet_mean_2019_max[elevation_mask]))
+
+print('\n')
+
+elevation_mask = (mask == True) & (ismip_1km['SRF'].values > 200) &\
+    (ismip_1km['SRF'].values < 400) & (regions == 1)
+print(np.nanmean(swnet_mean_2019[elevation_mask]))
+print(np.nanmean(swnet_mean_2019_min[elevation_mask]))
+print(np.nanmean(swnet_mean_2019_max[elevation_mask]))
+
+print('\n')
+
+elevation_mask = (mask == True) & (ismip_1km['SRF'].values > 1000) &\
+    (ismip_1km['SRF'].values <= 1200) & (regions == 1)
+print(np.nanmean(swnet_mean_2019[elevation_mask]))
+print(np.nanmean(swnet_mean_2019_min[elevation_mask]))
+print(np.nanmean(swnet_mean_2019_max[elevation_mask]))
 
 #%%
 print(df_regions.iloc[0,5])
@@ -362,8 +390,14 @@ P2
 """
 
 # Energy absorbed by ice sheet due to meltwater ponding
-print(df['energy_pj_2018'].sum())
+
 print(df['energy_pj_2019'].sum())
+print(df['min_energy_pj_2019'].sum())
+print(df['max_energy_pj_2019'].sum())
+
+print(df['energy_pj_2018'].sum())
+print(df['min_energy_pj_2018'].sum())
+print(df['max_energy_pj_2018'].sum())
 
 # Convert to melt potential
 ((df['energy_pj_2019'].sum() * 1e+12) / 333.55) * 1e-12
@@ -409,8 +443,6 @@ max_2018 = np.nansum(((swnet_mean_2018_max * 1000000) * 86400) / 1e15)
 min_2019 = np.nansum(((swnet_mean_2019_min * 1000000) * 86400) / 1e15)
 max_2019 = np.nansum(((swnet_mean_2019_max * 1000000) * 86400) / 1e15)
 
-
-
 print('Summer air temperatures were %0.2f K warmer in 2019 than 2018' % (np.nanmean(merra['t2m'].values[:,:,17]) - np.nanmean(merra['t2m'].values[:,:,16])))
 print('Extent of water increases by %0.2f km2 K-1' % np.nansum(df['water_feedback']))
 
@@ -419,8 +451,7 @@ feedback_1000 = np.nanmean((swnet_mean_2019-swnet_mean_2018)[elevation_mask])
 uncert_1000 = np.nanmean((swnet_mean_2019_max-swnet_mean_2018_min)[elevation_mask])
 
 print('Radiative forcing increases by %0.2f PJ d-1 K-1' % ((energy_2019 - energy_2018) / temp_diff))
-print('Radiative forcing increases by %0.2f PJ d-1 K-1' % ((max_2019 - min_2018) / temp_diff))
-print('Radiative forcing increases by %0.2f PJ d-1 K-1' % ((min_2019 - max_2018) / temp_diff))
+print('Uncertainty in radiative forcing %0.2f PJ d-1 K-1' % ((np.sqrt(((max_2019 - energy_2019) / temp_diff)**2 + ((max_2018 - energy_2018) / temp_diff)**2))))
 
 #%%
 

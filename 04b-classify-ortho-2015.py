@@ -24,7 +24,7 @@ from joblib import Parallel, delayed
 #%%
 
 # Define path
-path = '/Users/jr555/Documents/research/hydrology/'
+path = '/Users/jr555/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/data/'
 
 # Define files
 files = sorted(glob.glob(path + 'drone/20150721/Orthomosaics/*.tif'))
