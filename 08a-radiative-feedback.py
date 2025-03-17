@@ -12,6 +12,7 @@ import rioxarray as rio
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 
 # Define mean albedo lowering effect and uncertainty
 water_effect = 0.11
@@ -58,6 +59,19 @@ mcd_2018 = rio.open_rasterio(path1 + 'mcd-2018.tif')
 mcd_2019 = rio.open_rasterio(path1 + 'mcd-2019.tif')
 mcd_2018_match = mcd_2018.rio.reproject_match(elev)
 mcd_2019_match = mcd_2019.rio.reproject_match(elev)
+
+# Import data
+water = pd.read_csv(path1 + 'scales/water-2000.csv')
+non = pd.read_csv(path1 + 'scales/non-water-2000.csv')
+total_water_area = pd.read_csv(path1 + 'scales/water-area.csv')
+
+# Define windows
+windows = np.array((1, 2, 3, 4, 5, 6, 8, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90,
+                    100))
+
+# Get 600-1600 m [3:8]
+water_mid = water.iloc[:, 3:8].mean(axis=1)
+non_mid = non.iloc[:, 3:8].mean(axis=1)
 
 #%%
 
@@ -185,77 +199,92 @@ c2 = '#616E96'
 c3 = '#F8A557'
 c4 = '#3CBEDD'
 
-ax1.barh(range(len(area_water_2019)), area_water_2019, align='edge', 
-         alpha=0.4, color=c1, edgecolor='k', label='2019')
-ax1.barh(range(len(area_water_2018)), area_water_2018, align='edge', 
-         alpha=0.4, color=c2, edgecolor='k', label='2018')
-ax1.set_ylim(0,17)
-ax1.grid(linestyle='dotted', lw=1, zorder=1)
-ax1.tick_params(axis='both', which='major', labelsize=13)
-ax1.yaxis.set_ticks(np.arange(0, len(area_water_2018), 2))
-ax1.set_yticklabels(elevations[:-1][::2])
-ax1.legend(loc=1, fontsize=12)
+# Define colour map
+colormap = plt.get_cmap('coolwarm_r', water.shape[1])
+v = '#E05861'
 
-ax2.plot(forcing_2019, elevations[:-1], color=c1, zorder=2, lw=2, 
-         alpha=0.8, label='2019')
-ax2.fill_betweenx(elevations[:-1],
-                 min_2019,
-                 max_2019,
-                 zorder=1, color=c1, alpha=0.2)
-ax2.plot(forcing_2018, elevations[:-1], color=c2, zorder=2, lw=2, 
-         alpha=0.8, label='2018')
-ax2.fill_betweenx(elevations[:-1],
-                 min_2018,
-                 max_2018,
-                 zorder=1, color=c2, alpha=0.2)
-ax2.set_xlim(0, 1.2)
-ax2.yaxis.set_ticks(elevations[:-1][::2])
-ax2.set_yticklabels(elevations[:-1][::2])
+for i in range(non.shape[0]):
+    ax1.plot(1 - (non.iloc[i, :] / water.iloc[i,:]), elevations[:-1],
+             color=colormap(i), lw=2, alpha=0.5, zorder=0)
+ax1.set_xlim(0, 0.6)
+ax1.set_ylim(0, 3200)
+
+ax1.set_xlabel("Albedo variability due to meltwater ponding", fontsize=13)
+ax1.grid(True, which="both", linestyle="--", linewidth=0.5, zorder=0)
+ax1.tick_params(axis='both', which='major', labelsize=12)
+ax1.set_ylabel("Elevation", fontsize=13)
+ax1.set_yticks(elevations[:-1][::2])
+ax1.set_yticklabels(elevations[:-1][::2])
+
+# Plot legend
+custom_lines = [Line2D([0], [0], color=colormap(0.), lw=2),
+                Line2D([0], [0], color=colormap(.5), lw=2),
+                Line2D([0], [0], color=colormap(1.), lw=2)]
+ax1.legend(custom_lines, ['1 km', '25 km', '100 km'], fontsize=12)
+
+ax2.barh(range(len(area_water_2019)), area_water_2019, align='edge', 
+         alpha=0.4, color=c1, edgecolor='k', label='2019')
+ax2.barh(range(len(area_water_2018)), area_water_2018, align='edge', 
+         alpha=0.4, color=c2, edgecolor='k', label='2018')
+ax2.set_ylim(0,17)
+ax2.grid(linestyle='dotted', lw=1, zorder=1)
+ax2.tick_params(axis='both', which='major', labelsize=13)
+ax2.yaxis.set_ticks(np.arange(0, len(area_water_2018), 2))
 ax2.set_yticklabels([])
 ax2.legend(loc=1, fontsize=12)
 
-ax3.plot(df['energy_pj_2019'], elevations[:-1], color=c1, zorder=2, lw=2, 
+ax3.plot(forcing_2019, elevations[:-1], color=c1, zorder=2, lw=2, 
          alpha=0.8, label='2019')
-ax3.plot(df['energy_pj_2018'], elevations[:-1], color=c2, zorder=2, lw=2, 
+ax3.fill_betweenx(elevations[:-1],
+                 min_2019,
+                 max_2019,
+                 zorder=1, color=c1, alpha=0.2)
+ax3.plot(forcing_2018, elevations[:-1], color=c2, zorder=2, lw=2, 
          alpha=0.8, label='2018')
 ax3.fill_betweenx(elevations[:-1],
-                 df['min_energy_pj_2018'],
-                 df['max_energy_pj_2018'],
+                 min_2018,
+                 max_2018,
                  zorder=1, color=c2, alpha=0.2)
-ax3.fill_betweenx(elevations[:-1],
-                 df['min_energy_pj_2019'],
-                 df['max_energy_pj_2019'],
-                 zorder=1, color=c1, alpha=0.2)
-ax3.set_xlim(0, 6)
+ax3.set_xlim(0, 1.2)
 ax3.yaxis.set_ticks(elevations[:-1][::2])
+ax3.set_yticklabels(elevations[:-1][::2])
 ax3.set_yticklabels([])
 ax3.legend(loc=1, fontsize=12)
 
-ax4.plot(df_regions.iloc[0, :], elevations[:-1],
-             color=c4, lw=2, alpha=1, zorder=0, label='N')
+ax4.plot(df['energy_pj_2019'], elevations[:-1], color=c1, zorder=2, lw=2, 
+         alpha=0.8, label='2019')
+ax4.plot(df['energy_pj_2018'], elevations[:-1], color=c2, zorder=2, lw=2, 
+         alpha=0.8, label='2018')
 ax4.fill_betweenx(elevations[:-1],
+                 df['min_energy_pj_2018'],
+                 df['max_energy_pj_2018'],
+                 zorder=1, color=c2, alpha=0.2)
+ax4.fill_betweenx(elevations[:-1],
+                 df['min_energy_pj_2019'],
+                 df['max_energy_pj_2019'],
+                 zorder=1, color=c1, alpha=0.2)
+ax4.set_xlim(0, 6)
+ax4.yaxis.set_ticks(elevations[:-1][::2])
+ax4.legend(loc=1, fontsize=12)
+
+ax5.plot(df_regions.iloc[0, :], elevations[:-1],
+             color=c4, lw=2, alpha=1, zorder=0, label='N')
+ax5.fill_betweenx(elevations[:-1],
                  df_regions_min.iloc[0, :],
                  df_regions_max.iloc[0, :],
                  zorder=1, color=c4, alpha=0.2)
-ax4.plot(df_regions.iloc[5, :], elevations[:-1],
+ax5.plot(df_regions.iloc[5, :], elevations[:-1],
              color=c3, lw=2, alpha=1, zorder=0, label='SW')
-ax4.fill_betweenx(elevations[:-1],
+ax5.fill_betweenx(elevations[:-1],
                  df_regions_min.iloc[5, :],
                  df_regions_max.iloc[5, :],
                  zorder=1, color=c3, alpha=0.2)
-ax4.axhline(y=1250, ls='dashed', color='k')
-ax4.axhline(y=400, ls='dashed', color='k')
-ax4.legend(loc=1, fontsize=12)
-ax4.yaxis.set_ticks(elevations[:-1][::2])
-ax4.set_yticklabels(elevations[:-1][::2])
-ax4.set_xlim(0, 3)
-
-ax5.plot(temp_2019, elevations[:-1], color=c1, zorder=2, lw=2, 
-         alpha=0.8, label='2019')
-ax5.plot(temp_2018, elevations[:-1], color=c2, zorder=2, lw=2, 
-         alpha=0.8, label='2018')
-ax5.yaxis.set_ticks(elevations[:-1][::2])
+ax5.axhline(y=1250, ls='dashed', color='k')
+ax5.axhline(y=400, ls='dashed', color='k')
 ax5.legend(loc=1, fontsize=12)
+ax5.yaxis.set_ticks(elevations[:-1][::2])
+ax5.set_yticklabels(elevations[:-1][::2])
+ax5.set_xlim(0, 3)
 ax5.set_yticklabels([])
 
 ax6.plot(df['energy_feedback'], elevations[:-1], color=c4, zorder=2, lw=2, 
@@ -269,31 +298,31 @@ ax6.yaxis.set_ticks(elevations[:-1][::2])
 ax6.set_yticklabels(elevations[:-1][::2])
 ax6.set_yticklabels([])
 
-ax1.set_xlabel('Meltwater extent (km$^2$)', fontsize=14)
-ax2.set_xlabel('Radiative forcing (W m$^{-2}$)', fontsize=14)
-ax4.set_xlabel('Radiative forcing (W m$^{-2}$)', fontsize=14)
-ax5.set_xlabel('Summer air temperature (K)', fontsize=14)
-ax3.set_xlabel('Radiative forcing (PJ d$^{-1}$)', fontsize=14)
+ax1.set_xlabel('Albedo variability due to meltwater', fontsize=14)
+ax2.set_xlabel('Meltwater extent (km$^{2}$)', fontsize=14)
+ax3.set_xlabel('Radiative forcing (W m$^{-2}$)', fontsize=14)
+ax4.set_xlabel('Radiative forcing (PJ d$^{-1}$)', fontsize=14)
+ax5.set_xlabel('Radiative forcing (W m$^{-2}$)', fontsize=14)
 ax6.set_xlabel('Radiative feedback (PJ d$^{-1}$ K$^{-1}$)', fontsize=14)
 
 ax1.set_ylabel('Elevation (m a.s.l.)', fontsize=14)
 ax4.set_ylabel('Elevation (m a.s.l.)', fontsize=14)
 
 
-for ax in [ax2, ax3, ax4, ax5, ax6]:
+for ax in [ax3, ax4, ax5, ax6]:
     ax.grid(linestyle='dotted', lw=1, zorder=1)
     ax.tick_params(axis='both', which='major', labelsize=13)
     ax.set_ylim(0, 3400)
 
-ax1.text(0.03, 0.91, "a", fontsize=20, transform=ax1.transAxes, zorder=2)
+ax1.text(0.05, 0.91, "a", fontsize=20, transform=ax1.transAxes, zorder=2)
 ax2.text(0.03, 0.91, "b", fontsize=20, transform=ax2.transAxes)
 ax3.text(0.03, 0.91, "c", fontsize=20, transform=ax3.transAxes, zorder=1)
 ax4.text(0.03, 0.91, "d", fontsize=20, transform=ax4.transAxes, zorder=1)
 ax5.text(0.03, 0.91, "e", fontsize=20, transform=ax5.transAxes, zorder=1)
 ax6.text(0.03, 0.91, "f", fontsize=20, transform=ax6.transAxes, zorder=1)
 
-ax4.text(0.83, 0.14, "site 1", fontsize=12, transform=ax4.transAxes, zorder=1)
-ax4.text(0.83, 0.39, "site 2", fontsize=12, transform=ax4.transAxes, zorder=1)
+ax5.text(0.83, 0.14, "site 1", fontsize=12, transform=ax5.transAxes, zorder=1)
+ax5.text(0.83, 0.39, "site 2", fontsize=12, transform=ax5.transAxes, zorder=1)
 
 plt.savefig(path2 + 'fig-3-radiative-forcing.png', dpi=300)
 
