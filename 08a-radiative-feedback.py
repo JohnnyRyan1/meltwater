@@ -18,9 +18,12 @@ from matplotlib.lines import Line2D
 water_effect = 0.11
 effect_uncert = 0.06
 
+# Define user
+user = 'johnnyryan'
+
 # Define path
-path1 = '/Users/jr555/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/data/'
-path2 = '/Users/jr555/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/figures/'
+path1 = '/Users/' + user + '/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/data/'
+path2 = '/Users/' + user + '/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/figures/'
 
 # Read raster data
 sw_2018 = xr.open_dataset(path1 + 'zhang/surface_water_mask_2018_1km.tif')
@@ -198,6 +201,7 @@ c1 = '#E05861'
 c2 = '#616E96'
 c3 = '#F8A557'
 c4 = '#3CBEDD'
+c5 = '#A64AC9'
 
 # Define colour map
 colormap = plt.get_cmap('coolwarm_r', water.shape[1])
@@ -212,7 +216,6 @@ ax1.set_ylim(0, 3200)
 ax1.set_xlabel("Albedo variability due to meltwater ponding", fontsize=13)
 ax1.grid(True, which="both", linestyle="--", linewidth=0.5, zorder=0)
 ax1.tick_params(axis='both', which='major', labelsize=12)
-ax1.set_ylabel("Elevation", fontsize=13)
 ax1.set_yticks(elevations[:-1][::2])
 ax1.set_yticklabels(elevations[:-1][::2])
 
@@ -268,11 +271,11 @@ ax4.yaxis.set_ticks(elevations[:-1][::2])
 ax4.legend(loc=1, fontsize=12)
 
 ax5.plot(df_regions.iloc[0, :], elevations[:-1],
-             color=c4, lw=2, alpha=1, zorder=0, label='N')
+             color=c5, lw=2, alpha=1, zorder=0, label='N')
 ax5.fill_betweenx(elevations[:-1],
                  df_regions_min.iloc[0, :],
                  df_regions_max.iloc[0, :],
-                 zorder=1, color=c4, alpha=0.2)
+                 zorder=1, color=c5, alpha=0.2)
 ax5.plot(df_regions.iloc[5, :], elevations[:-1],
              color=c3, lw=2, alpha=1, zorder=0, label='SW')
 ax5.fill_betweenx(elevations[:-1],
@@ -300,9 +303,9 @@ ax6.set_yticklabels([])
 
 ax1.set_xlabel('Albedo variability due to meltwater', fontsize=14)
 ax2.set_xlabel('Meltwater extent (km$^{2}$)', fontsize=14)
-ax3.set_xlabel('Radiative forcing (W m$^{-2}$)', fontsize=14)
-ax4.set_xlabel('Radiative forcing (PJ d$^{-1}$)', fontsize=14)
-ax5.set_xlabel('Radiative forcing (W m$^{-2}$)', fontsize=14)
+ax3.set_xlabel('Radiative effect (W m$^{-2}$)', fontsize=14)
+ax4.set_xlabel('Radiative effect (PJ d$^{-1}$)', fontsize=14)
+ax5.set_xlabel('Radiative effect (W m$^{-2}$)', fontsize=14)
 ax6.set_xlabel('Radiative feedback (PJ d$^{-1}$ K$^{-1}$)', fontsize=14)
 
 ax1.set_ylabel('Elevation (m a.s.l.)', fontsize=14)
@@ -508,7 +511,7 @@ print(energy_double_2018)
 water_double = []
 
 for e in range(len(elevations) - 1):
-    elevation_mask = (mask == True) & (ismip_1km['SRF'].values > elevations[e]) & (ismip_1km['SRF'].values < elevations[e+1])
+    elevation_mask = (mask == True) & (ismip_1km['SRF'].values > elevations[e]) & (ismip_1km['SRF'].values < elevations[e+1]) 
     water_double.append(np.nansum(sw_2019_double[elevation_mask]))
 
 water_double = np.array(water_double)
@@ -520,13 +523,47 @@ double_df.columns = ['water']
 
 #%%
 
+area, area_water_2018, area_water_2019 = [], [], []
+
+for e in range(len(elevations) - 1):
+    elevation_mask = (mask == True) & (ismip_1km['SRF'].values > elevations[e]) & (ismip_1km['SRF'].values < elevations[e+1]) & (regions == 6)
+    area_water_2018.append(np.nansum(sw_2018[elevation_mask]))
+    area_water_2019.append(np.nansum(sw_2019[elevation_mask]))
+
+area = np.array(area)
+area_water_2018 = np.array(area_water_2018)
+area_water_2019 = np.array(area_water_2019)
+
+fig, (ax1) = plt.subplots(nrows=1, ncols=1, figsize=(5, 5),
+                                             layout='constrained')
+
+# Define colour map
+c1 = '#E05861'
+c2 = '#616E96'
+c3 = '#F8A557'
+c4 = '#3CBEDD'
+
+# Define colour map
+colormap = plt.get_cmap('coolwarm_r', water.shape[1])
+v = '#E05861'
+
+ax1.barh(range(len(area_water_2019)), area_water_2019, align='edge', 
+         alpha=0.4, color=c1, edgecolor='k', label='2019')
+ax1.set_ylim(0,17)
+ax1.grid(linestyle='dotted', lw=1, zorder=1)
+ax1.tick_params(axis='both', which='major', labelsize=13)
+ax1.yaxis.set_ticks(np.arange(0, len(area_water_2018), 2))
+ax1.set_xlabel('Meltwater extent (km$^{2}$)', fontsize=14)
+ax1.set_ylabel("Elevation (m a.s.l.)", fontsize=13)
+ax1.set_yticks(np.arange(0, 17, 1)[::2])
+ax1.set_yticklabels(elevations[:-1][::2])
+#ax1.axhline(y=6.5, ls='dashed', color='k')
+
+plt.savefig('/Users/jr555/Library/CloudStorage/OneDrive-DukeUniversity/funding/unsubmitted/2025-csda-meltwater/figures/sw-extent.png', dpi=300)
 
 
 
-
-
-
-
+#%%
 
 
 

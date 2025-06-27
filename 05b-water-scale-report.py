@@ -19,8 +19,8 @@ path1 = '/Users/' + user + '/Library/CloudStorage/OneDrive-DukeUniversity/resear
 path2 = '/Users/' + user + '/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/figures/'
 
 # Define path to files
-drone = gpd.read_file(path1 + 'drone/wq7-20150721-polys-within.shp')
-russell = gpd.read_file(path1 + 'drone/rus-20150712-polys.shp')
+drone = gpd.read_file(path1 + 'drone/wq7/wq7-20150721-polys-within.shp')
+russell = gpd.read_file(path1 + 'drone/russell/rus-20150712-polys.shp')
 zhang_2018 = gpd.read_file(path1 + 'zhang/zhang_polys_2018_wq7.shp')
 zhang_2019 = gpd.read_file(path1 + 'zhang/zhang_polys_2019_wq7.shp')
 
@@ -31,7 +31,7 @@ zhang_2018['area'] = zhang_2018.area
 zhang_2019['area'] = zhang_2019.area
 
 # Import raster for total area calculation
-classified = rio.open_rasterio(path1 + 'drone/wq7-20150721-classified-within.tif')
+classified = rio.open_rasterio(path1 + 'drone/wq7/wq7-20150721-classified-within.tif')
 
 # Count non-NaN values across all dimensions
 non_nan_count_total = classified.count()
@@ -39,7 +39,7 @@ study_area = non_nan_count_total * classified.rio.transform()[0] * classified.ri
 study_area_km2 = study_area / 1000000
 
 # Area of Russell/Isunguata
-russell_total = gpd.read_file(path1 + 'drone/outline.shp')
+russell_total = gpd.read_file(path1 + 'drone/wq7/wq7-outline.shp')
 
 1721 + 1460 + 1745 + 1683 + 1442 + 1681
 
@@ -79,9 +79,9 @@ c4 = '#3CBEDD'
 # Plot the area-frequency plot
 fig, (ax1) = plt.subplots(nrows=1, ncols=1, figsize=(6,4), 
                                     layout='constrained')
-ax1.fill_between(bin_centers, hist1, step="post", alpha=0.5, color=c4, label="This study")
-ax1.fill_between(bin_centers, hist2, step="post", alpha=0.5, color=c1, label="Zhang (2019)")
-ax1.fill_between(bin_centers, hist3, step="post", alpha=0.5, color=c2, label="Zhang (2018)")
+ax1.fill_between(bin_centers, hist1, step="post", alpha=0.5, color=c4, label="Drone (2015)")
+ax1.fill_between(bin_centers, hist2, step="post", alpha=0.5, color=c1, label="Satellite (2019)")
+ax1.fill_between(bin_centers, hist3, step="post", alpha=0.5, color=c2, label="Satellite (2018)")
 
 ax1.axvline(x=100, ls='dashed', lw=1.5, color='k')
 ax1.axvline(x=1000, ls='dashed', lw=1.5, color='k')
@@ -94,7 +94,7 @@ ax1.legend(fontsize=11)
 ax1.grid(True, which="both", linestyle="--", linewidth=0.5, zorder=0)
 ax1.tick_params(axis='both', which='major', labelsize=12)
 ax1.set_xlim(0.2, 300000)
-#plt.savefig(path2 + 'fig5-meltwater-histograms.png', dpi=300)
+plt.savefig(path2 + 'fig-5-meltwater-histograms.png', dpi=300)
 
 #%%
 
