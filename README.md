@@ -14,15 +14,18 @@ Meltwater ponding reduces Greenland Ice Sheet albedo but this process is not inc
 
 ![Figure 1](04-figures/fig-1-transect.png)
 
-## 🗂 Repository Structure
+## 🗂 Simplified repository structure
 
 ```bash
 meltwater/
-├── 01-pre-processing/  # Format datasets
-├── 02-methods/         # Classify drone orthomosaics
-├── 03-analysis/        # Quantify key metrics
-├── 04-figures/         # Figures for article
-├── environment.yml     # Conda environment file
-├── LICENSE             # License
-├── README.md	        # Readme
-└── DATA.md             # Instructions for accessing datasets
+├── 01-pre-processing		# Format datasets
+├── 02-methods				# Classify drone orthomosaics
+├── 03-analysis				# Quantify key metrics
+│   ├── 01-variability
+│   ├── 02-radiative-effect
+│   ├── 03-scale
+│   └── 04-extra
+├── 04-figures				# Some figures from article
+├── LICENSE					# License
+└── README.md
+
