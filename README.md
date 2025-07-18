@@ -18,14 +18,17 @@ Meltwater ponding reduces Greenland Ice Sheet albedo but this process is not inc
 
 ```bash
 meltwater/
-├── 01-pre-processing		# Format datasets
-├── 02-methods				# Classify drone orthomosaics
-├── 03-analysis				# Quantify key metrics
+├── 01-pre-processing
+├── 02-methods
+├── 03-analysis	
 │   ├── 01-variability
 │   ├── 02-radiative-effect
 │   ├── 03-scale
 │   └── 04-extra
-├── 04-figures				# Some figures from article
-├── LICENSE					# License
+├── 04-figures
+├── LICENSE
 └── README.md
 
+## Data
+
+[![Data DOI](https://img.shields.io/badge/Data-Zenodo-blue.svg)](https://doi.org/10.7924/r4ff41j34)
