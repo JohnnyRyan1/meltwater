@@ -28,6 +28,7 @@ meltwater/
 ├── 04-figures
 ├── LICENSE
 └── README.md
+```
 
 ## Data availability
 
@@ -42,6 +43,8 @@ The near-surface air temperature and downward all-sky shortwave radiation data a
 The high-resolution imagery was acquired using a fixed-wing drone similar to that described by [Ryan et al. (2015)](https://tc.copernicus.org/articles/9/1/2015/tc-9-1-2015.html). The drone collected imagery at two separate field sites. The first site includes both Russell Glacier and Isunguata Sermia (180 km2) with an elevational range of 150–660 m a.s.l. During six surveys, the drone collected 9,732 overlapping images of glacier surface on Jul 11–12, 2015. The second site (110 km2) is situated in the dark zone with an elevational range of 1,170–1,290 m a.s.l. Here the drone collected a total of 3,795 images during three surveys between Jul 20–22, 2015. We used Agisoft Metashape Pro v2.2.0 to generate orthomosaics from the overlapping aerial imagery. The final products have a spatial resolution of 0.30 m.
 
 We mapped meltwater ponding in the orthomosaic produced over the dark zone (1,170–1,290 m a.s.l.) using a semi-automated classification approach described in the article. We mapped meltwater over Russell Glacier and Isunguata Sermia by manually digitized ponded areas using the Geo-SAM QGIS plugin, an interactive segmentation tool based on the Segment Anything Model (SAM) foundation AI model. The final water maps are provided as shapefiles.
+
+## References
 
 Ryan, J. C. et al. (2015), UAV photogrammetry and structure from motion to assess calving dynamics at Store Glacier, a large outlet draining the Greenland ice sheet. The Cryosphere 9, 1–11.
 
