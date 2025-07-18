@@ -1,1 +1,0 @@
-for i in *.ARW; do sips -s format jpeg $i --out "jpg/${i%.*}.jpg"; done

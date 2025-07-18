@@ -1,0 +1,1 @@
+gdalwarp -of GTiff -cutline /Users/jryan4/Dropbox\ \(University\ of\ Oregon\)/research/hydrology/data/shapefiles/subset.shp  -crop_to_cutline /Users/jryan4/Dropbox\ \(University\ of\ Oregon\)/research/hydrology/data/zhang/surface_water_mask_2019.tif /Users/jryan4/Dropbox\ \(University\ of\ Oregon\)/research/hydrology/data/zhang/surface_water_mask_2019_clip.tif 
