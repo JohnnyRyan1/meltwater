@@ -19,11 +19,11 @@ water_effect = 0.11
 effect_uncert = 0.06
 
 # Define user
-user = 'johnnyryan'
+user = 'jr555'
 
 # Define path
 path1 = '/Users/' + user + '/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/data/'
-path2 = '/Users/' + user + '/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/figures/'
+path2 = '/Users/' + user + '/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/03-final-revision/'
 
 # Read raster data
 sw_2018 = xr.open_dataset(path1 + 'zhang/surface_water_mask_2018_1km.tif')
@@ -327,7 +327,7 @@ ax6.text(0.03, 0.91, "f", fontsize=20, transform=ax6.transAxes, zorder=1)
 ax5.text(0.83, 0.14, "site 1", fontsize=12, transform=ax5.transAxes, zorder=1)
 ax5.text(0.83, 0.39, "site 2", fontsize=12, transform=ax5.transAxes, zorder=1)
 
-plt.savefig(path2 + 'fig-3-radiative-forcing.png', dpi=300)
+plt.savefig(path2 + 'fig-2-radiative-forcing.pdf')
 
 #%%
 

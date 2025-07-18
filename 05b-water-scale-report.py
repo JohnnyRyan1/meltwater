@@ -12,11 +12,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Define user
-user = 'jr555'
+user = 'johnnyryan'
 
 # Define path
 path1 = '/Users/' + user + '/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/data/'
-path2 = '/Users/' + user + '/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/figures/'
+path2 = '/Users/' + user + '/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/03-final-revision/'
 
 # Define path to files
 drone = gpd.read_file(path1 + 'drone/wq7/wq7-20150721-polys-within.shp')
@@ -91,10 +91,10 @@ ax1.set_yscale("log")
 ax1.set_xlabel("Area (m$^2$)", fontsize=12)
 ax1.set_ylabel("Frequency", fontsize=12)
 ax1.legend(fontsize=11)
-ax1.grid(True, which="both", linestyle="--", linewidth=0.5, zorder=0)
+ax1.grid(True, which="both", linestyle="--", linewidth=0.5, zorder=0, alpha=0.5)
 ax1.tick_params(axis='both', which='major', labelsize=12)
 ax1.set_xlim(0.2, 300000)
-plt.savefig(path2 + 'fig-5-meltwater-histograms.png', dpi=300)
+plt.savefig(path2 + 'fig-5-meltwater-histograms.pdf')
 
 #%%
 
