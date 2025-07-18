@@ -11,7 +11,7 @@ Meltwater ponding reduces Greenland Ice Sheet albedo but this process is not inc
 ![Figure 1](04-figures/fig-1-transect.png)
 *Meltwater ponding is associated with local minima in surface albedo across the Greenland Ice Sheet.*
 
-## 🗂 Simplified repository structure
+## 🗂 Repository structure
 
 ```bash
 meltwater/
@@ -27,7 +27,7 @@ meltwater/
 └── README.md
 ```
 
-## Data availability
+## 📌 Data availability
 
 Data required to reproduce the findings of this study are available in a [Duke University Libraries Digital Repository](https://doi.org/10.7924/r4ff41j34). 
 
@@ -50,12 +50,4 @@ We mapped meltwater ponding in the orthomosaic produced over the dark zone (1,17
 ## Acknowledgments
 
 This research was supported by NASA grants #80NSSC25K7364 and #80NSSC25K7743. 
-
-## References
-
-Ryan, J. C. et al. (2015), UAV photogrammetry and structure from motion to assess calving dynamics at Store Glacier, a large outlet draining the Greenland ice sheet. The Cryosphere 9, 1–11.
-
-Ryan, J. C. (2024), Contribution of surface and cloud radiative feedbacks to Greenland Ice Sheet meltwater production during 2002–2023. Commun. Earth Environ. 5, 1–9.
-
-Zhang, W. et al. (2023), Pan-Greenland mapping of supraglacial rivers, lakes, and water-filled crevasses in a cool summer (2018) and a warm summer (2019). Remote Sens. Environ. 297, 113781.
 
