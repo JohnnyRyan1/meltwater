@@ -2,17 +2,14 @@
 
 This repository contains the code and data references for the article:
 
-> Ryan, J. C., Cooper, M. G., Cooley, S. W., Rennermalm, Å. K., & Smith, L. C. (2025). **Meltwater ponding has an underestimated radiative effect on the surface of the Greenland Ice Sheet**. Nature Communications, XX, XX–XX. https://doi.org/XX.XXXXX  
-
----
+> Ryan, J. C., Cooper, M. G., Cooley, S. W., Rennermalm, Å. K., & Smith, L. C. (2025). **Meltwater ponding has an underestimated radiative effect on the surface of the Greenland Ice Sheet**. XXX, XX, XX–XX. https://doi.org/XX.XXXXX  
 
 ## 🧊 Summary
 
 Meltwater ponding reduces Greenland Ice Sheet albedo but this process is not included in models. This study uses drone imagery to show that small streams and ponds, often missed by satellites, considerably increases the energy available for melt.
 
----
-
 ![Figure 1](04-figures/fig-1-transect.png)
+*Meltwater ponding is associated with local minima in surface albedo across the Greenland Ice Sheet.*
 
 ## 🗂 Simplified repository structure
 
@@ -32,7 +29,7 @@ meltwater/
 
 ## Data availability
 
-Data required to reproduce the findings of this study are available at the [Duke University Libraries Digital Repository](https://doi.org/10.7924/r4ff41j34). 
+Data required to reproduce the findings of this study are available in a [Duke University Libraries Digital Repository](https://doi.org/10.7924/r4ff41j34). 
 
 These datasets include 1) surface water and surface albedo data from satellite remote sensing, 2) near-surface air temperature and downward shortwave radiation data from atmospheric reanalysis, and 3) high-resolution imagery from done surveys over the Greenland Ice Sheet.
 
@@ -44,6 +41,16 @@ The high-resolution imagery was acquired using a fixed-wing drone similar to tha
 
 We mapped meltwater ponding in the orthomosaic produced over the dark zone (1,170–1,290 m a.s.l.) using a semi-automated classification approach described in the article. We mapped meltwater over Russell Glacier and Isunguata Sermia by manually digitized ponded areas using the Geo-SAM QGIS plugin, an interactive segmentation tool based on the Segment Anything Model (SAM) foundation AI model. The final water maps are provided as shapefiles.
 
+![Figure 2](04-figures/fig-3-surveys.png) 
+*Drone surveys across the ablation zone of Southwest Greenland Ice Sheet provide high-resolution imagery for investigating meltwater ponding.*
+
+![Figure 3](04-figures/fig-4-images.png)
+*Examples of meltwater ponding in the Southwest Greenland Ice Sheet ablation zone imaged by drone.*
+
+## Acknowledgments
+
+This research was supported by NASA grants #80NSSC25K7364 and #80NSSC25K7743. 
+
 ## References
 
 Ryan, J. C. et al. (2015), UAV photogrammetry and structure from motion to assess calving dynamics at Store Glacier, a large outlet draining the Greenland ice sheet. The Cryosphere 9, 1–11.
@@ -51,3 +58,4 @@ Ryan, J. C. et al. (2015), UAV photogrammetry and structure from motion to asses
 Ryan, J. C. (2024), Contribution of surface and cloud radiative feedbacks to Greenland Ice Sheet meltwater production during 2002–2023. Commun. Earth Environ. 5, 1–9.
 
 Zhang, W. et al. (2023), Pan-Greenland mapping of supraglacial rivers, lakes, and water-filled crevasses in a cool summer (2018) and a warm summer (2019). Remote Sens. Environ. 297, 113781.
+
