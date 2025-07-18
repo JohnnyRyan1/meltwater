@@ -6,7 +6,7 @@ This repository contains the code and data references for the article:
 
 ## 🧊 Summary
 
-Meltwater ponding reduces Greenland Ice Sheet albedo but this process is not included in models. This study uses drone imagery to show that small streams and ponds, often missed by satellites, considerably increases the energy available for melt.
+Meltwater ponding reduces Greenland Ice Sheet albedo but this process is not included in models. In this study we used drone imagery to show that small streams and ponds, often missed by satellites, considerably increase the amount of energy available for melt.
 
 ![Figure 1](04-figures/fig-1-transect.png)
 *Meltwater ponding is associated with local minima in surface albedo across the Greenland Ice Sheet.*
