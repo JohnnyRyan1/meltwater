@@ -23,6 +23,7 @@ meltwater/
 │   ├── 03-scale
 │   └── 04-extra
 ├── 04-figures
+├── 05-data
 ├── LICENSE
 └── README.md
 ```

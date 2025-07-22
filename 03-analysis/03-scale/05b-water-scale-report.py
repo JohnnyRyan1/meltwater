@@ -6,13 +6,14 @@ Areas of meltwater in WQ7.
 """
 
 # Import packages
+import pandas as pd
 import rioxarray as rio
 import geopandas as gpd
 import numpy as np
 import matplotlib.pyplot as plt
 
 # Define user
-user = 'johnnyryan'
+user = 'jr555'
 
 # Define path
 path1 = '/Users/' + user + '/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/data/'
@@ -69,6 +70,10 @@ hist4, bin_edges = np.histogram(russell['area'], bins=bins)
 # Calculate bin centers
 bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
 
+# Make source data
+df = pd.DataFrame(list(zip(bin_centers, hist1, hist2, hist3)), columns=['bin_centers','drone_2015','zhang_2019','zhang_2018'])
+df.to_csv(path1 + 'dataframes/histogram.csv')
+
 #%%
 # Define colour map
 c1 = '#E05861'
@@ -94,7 +99,7 @@ ax1.legend(fontsize=11)
 ax1.grid(True, which="both", linestyle="--", linewidth=0.5, zorder=0, alpha=0.5)
 ax1.tick_params(axis='both', which='major', labelsize=12)
 ax1.set_xlim(0.2, 300000)
-plt.savefig(path2 + 'fig-5-meltwater-histograms.pdf')
+#plt.savefig(path2 + 'fig-5-meltwater-histograms.pdf')
 
 #%%
 

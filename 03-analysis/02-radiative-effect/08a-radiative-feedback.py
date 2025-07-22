@@ -213,7 +213,6 @@ for i in range(non.shape[0]):
 ax1.set_xlim(0, 0.6)
 ax1.set_ylim(0, 3200)
 
-ax1.set_xlabel("Albedo variability due to meltwater ponding", fontsize=13)
 ax1.grid(True, which="both", linestyle="--", linewidth=0.5, zorder=0)
 ax1.tick_params(axis='both', which='major', labelsize=12)
 ax1.set_yticks(elevations[:-1][::2])
@@ -236,17 +235,17 @@ ax2.yaxis.set_ticks(np.arange(0, len(area_water_2018), 2))
 ax2.set_yticklabels([])
 ax2.legend(loc=1, fontsize=12)
 
-ax3.plot(forcing_2019, elevations[:-1], color=c1, zorder=2, lw=2, 
+ax3.plot(df['forcing_2019'], elevations[:-1], color=c1, zorder=2, lw=2, 
          alpha=0.8, label='2019')
 ax3.fill_betweenx(elevations[:-1],
-                 min_2019,
-                 max_2019,
+                 df['min_2019'],
+                 df['max_2019'],
                  zorder=1, color=c1, alpha=0.2)
-ax3.plot(forcing_2018, elevations[:-1], color=c2, zorder=2, lw=2, 
+ax3.plot(df['forcing_2018'], elevations[:-1], color=c2, zorder=2, lw=2, 
          alpha=0.8, label='2018')
 ax3.fill_betweenx(elevations[:-1],
-                 min_2018,
-                 max_2018,
+                 df['min_2018'],
+                 df['max_2018'],
                  zorder=1, color=c2, alpha=0.2)
 ax3.set_xlim(0, 1.2)
 ax3.yaxis.set_ticks(elevations[:-1][::2])
@@ -327,7 +326,26 @@ ax6.text(0.03, 0.91, "f", fontsize=20, transform=ax6.transAxes, zorder=1)
 ax5.text(0.83, 0.14, "site 1", fontsize=12, transform=ax5.transAxes, zorder=1)
 ax5.text(0.83, 0.39, "site 2", fontsize=12, transform=ax5.transAxes, zorder=1)
 
-plt.savefig(path2 + 'fig-2-radiative-forcing.pdf')
+#plt.savefig(path2 + 'fig-2-radiative-forcing.pdf')
+
+#%%
+
+# Make source data file
+source_df_b = pd.DataFrame(list(zip(area_water_2018, area_water_2019)), columns=['water_area_2018','water_area_2019'])
+source_df_b.to_csv(path1 + 'scales/water-area-2018-2019.csv')
+source_df_c = df[['forcing_2018', 'min_2018', 'max_2018', 'forcing_2019', 'min_2018', 'max_2019']]
+source_df_c.to_csv(path1 + 'dataframes/forcing.csv')
+source_df_d = df[['energy_pj_2018', 'min_energy_pj_2018', 'max_energy_pj_2018',
+                  'energy_pj_2019', 'min_energy_pj_2019', 'max_energy_pj_2019']]
+source_df_d.to_csv(path1 + 'dataframes/energy.csv')
+source_df_e1 = df_regions.T
+source_df_e1.to_csv(path1 + 'dataframes/regions_mean.csv')
+source_df_e2 = df_regions_min.T
+source_df_e2.to_csv(path1 + 'dataframes/regions_min.csv')
+source_df_e3 = df_regions_max.T
+source_df_e3.to_csv(path1 + 'dataframes/regions_max.csv')
+source_df_f = df[['energy_feedback', 'energy_feedback_min', 'energy_feedback_max']]
+source_df_f.to_csv(path1 + 'dataframes/feedback.csv')
 
 #%%
 
@@ -559,7 +577,7 @@ ax1.set_yticks(np.arange(0, 17, 1)[::2])
 ax1.set_yticklabels(elevations[:-1][::2])
 #ax1.axhline(y=6.5, ls='dashed', color='k')
 
-plt.savefig('/Users/jr555/Library/CloudStorage/OneDrive-DukeUniversity/funding/unsubmitted/2025-csda-meltwater/figures/sw-extent.png', dpi=300)
+#plt.savefig('/Users/jr555/Library/CloudStorage/OneDrive-DukeUniversity/funding/unsubmitted/2025-csda-meltwater/figures/sw-extent.png', dpi=300)
 
 
 
