@@ -16,14 +16,17 @@ from scipy.signal import convolve2d
 
 #%%
 
+# Define user
+user = 'johnnyryan'
+
+# Define path
+path1 = '/Users/' + user + '/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/data/'
+
 # Define year
 year = str(2019)
 
 # Define sample size
 sample_size = 2000
-
-# Define path
-path1 = '/Users/jr555/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/data/'
 
 # Read raster data
 sw = rio.open_rasterio(path1 + 'zhang/surface_water_mask_' + year + '_500m.tif')
@@ -82,12 +85,12 @@ no_nan_blocks = (nan_count == 0)
 # Define window size from 1 to 250 km
 windows = np.array((1, 2, 3, 4, 5, 6, 8, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90,
                     100))
-kernel_size = (windows[:-1] + windows[1:])**2
 
 final_data_list = []
 
-for w in range(len(windows[:-1])):
-    print('Window size is %.0f pixels' % ((windows[w] +  windows[w+1])**2))
+for w in range(len(windows)):
+    print('Window size is %.1f km' % (((windows[w] +  windows[w]+1)*500)/1000))
+
 
 
     data_list = []
@@ -123,9 +126,9 @@ for w in range(len(windows[:-1])):
                 
                 # Define window
                 x0 = np.maximum(coords[0]-windows[w], 0)
-                x1 = coords[0]+windows[w+1]
+                x1 = coords[0]+windows[w]+1
                 y0 = np.maximum(coords[1]-windows[w], 0)
-                y1 = coords[1]+windows[w+1]
+                y1 = coords[1]+windows[w]+1
                         
                 # Identify nearest neighbors
                 neighbors = np.array(sw[:,:,0][x0:x1,y0:y1]).flatten()
@@ -165,13 +168,6 @@ df = pd.DataFrame(stats_list)
 
 # Export
 df.to_csv(path1 + 'scales/non-water-2000.csv', index=False)
-
-
-#%%
-df = pd.DataFrame(final_data_list)
-df.columns = ['y', 'x', 'std', 'mean_albedo', 'elevation']
-df['elevation'] = df['elevation'].astype(float)
-df.to_csv(path1 + 'non-water-albedo-effect-' + year + '.csv')
 
 #%%
 

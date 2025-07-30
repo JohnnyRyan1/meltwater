@@ -47,8 +47,8 @@ sw = xr.where(mask_match, sw, np.nan)
 # Bin forcing into elevations
 elevations = np.arange(0, 3600, 200)
 
-# Define window size from 1 to 100 km
-windows = np.array((2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 25, 50, 100))
+# Define window size from 1 to 50 km
+windows = np.array((2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 25, 50))
 
 # Find cells with >50% water
 x, y = np.where(sw[:,:,0] > 0.5)
@@ -58,10 +58,8 @@ x, y = np.where(sw[:,:,0] > 0.5)
 # Define lists
 final_data_list = []
 
-for w in range(len(windows[:-1])):
+for w in range(len(windows)):
     
-    print('Window size is %.0f pixels' % ((windows[w] +  windows[w+1])**2))
-
     data_list = []
 
     for n in range(x.shape[0]):
@@ -248,7 +246,11 @@ plt.savefig(path2 + 'sfig-1-water-vs-albedo.png', dpi=300)
 
 #%%
 
-
-
+    
+    
+    
+    
+    
+    
 
 

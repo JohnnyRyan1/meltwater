@@ -19,7 +19,7 @@ water_effect = 0.11
 effect_uncert = 0.06
 
 # Define user
-user = 'jr555'
+user = 'johnnyryan'
 
 # Define path
 path1 = '/Users/' + user + '/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/data/'
@@ -67,14 +67,6 @@ mcd_2019_match = mcd_2019.rio.reproject_match(elev)
 water = pd.read_csv(path1 + 'scales/water-2000.csv')
 non = pd.read_csv(path1 + 'scales/non-water-2000.csv')
 total_water_area = pd.read_csv(path1 + 'scales/water-area.csv')
-
-# Define windows
-windows = np.array((1, 2, 3, 4, 5, 6, 8, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90,
-                    100))
-
-# Get 600-1600 m [3:8]
-water_mid = water.iloc[:, 3:8].mean(axis=1)
-non_mid = non.iloc[:, 3:8].mean(axis=1)
 
 #%%
 
@@ -349,6 +341,18 @@ source_df_f.to_csv(path1 + 'dataframes/feedback.csv')
 
 #%%
 
+#%%
+
+vari_25km = 1 - (non.iloc[10, :] / water.iloc[10,:])
+vari_2km = 1 - (non.iloc[1, :] / water.iloc[1,:])
+vari_1km = 1 - (non.iloc[0, :] / water.iloc[0,:])
+
+print(vari_25km.iloc[5]*100)
+print(np.mean(vari_25km[0:4])*100)  
+print(np.mean(vari_25km[10:])*100)
+
+#%%
+
 
 """
 P1a
@@ -503,40 +507,6 @@ uncert_1000 = np.nanmean((swnet_mean_2019_max-swnet_mean_2018_min)[elevation_mas
 print('Radiative forcing increases by %0.2f PJ d-1 K-1' % ((energy_2019 - energy_2018) / temp_diff))
 print('Uncertainty in radiative forcing %0.2f PJ d-1 K-1' % ((np.sqrt(((max_2019 - energy_2019) / temp_diff)**2 + ((max_2018 - energy_2018) / temp_diff)**2))))
 
-#%%
-
-# What would quadruple the amount of water look like?
-sw_2019[~mask] = np.nan
-sw_2019_double = np.minimum(sw_2019 * 4, 1)
-albedo_change_double_2019 = sw_2019_double * water_effect
-swnet_double_2019 = albedo_change_double_2019 * merra_climatology
-elevation_mask = (mask == True) & (ismip_1km['SRF'].values > 0) & (ismip_1km['SRF'].values <= 1600)
-print(np.nanmean(swnet_double_2019[elevation_mask]))
-energy_double_2019 = np.nansum(((swnet_double_2019 * 1000000) * 86400) / 1e15)
-print(energy_double_2019)
-
-sw_2018[~mask] = np.nan
-sw_2018_double = np.minimum(sw_2018 * 4, 1)
-albedo_change_double_2018 = sw_2018_double * water_effect
-swnet_double_2018 = albedo_change_double_2018 * merra_climatology
-elevation_mask = (mask == True) & (ismip_1km['SRF'].values > 0) & (ismip_1km['SRF'].values <= 1600)
-print(np.nanmean(swnet_double_2018[elevation_mask]))
-energy_double_2018 = np.nansum(((swnet_double_2018 * 1000000) * 86400) / 1e15)
-print(energy_double_2018)
-
-#%%
-
-water_double = []
-
-for e in range(len(elevations) - 1):
-    elevation_mask = (mask == True) & (ismip_1km['SRF'].values > elevations[e]) & (ismip_1km['SRF'].values < elevations[e+1]) 
-    water_double.append(np.nansum(sw_2019_double[elevation_mask]))
-
-water_double = np.array(water_double)
-
-# Save as DataFrame
-double_df = pd.DataFrame(list(zip(water_double)))
-double_df.columns = ['water']
 
 
 #%%

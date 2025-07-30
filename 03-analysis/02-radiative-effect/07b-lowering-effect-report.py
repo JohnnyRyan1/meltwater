@@ -37,9 +37,6 @@ for f in range(len(df_2018_list)):
     r_values.append(df['r'].values)
     slope_values.append(df['slope'].values)
 
-# Define window size from 1 to 100 km
-windows = np.array((2, 3, 4, 5, 6, 7, 8, 9, 10))
-
 # Find mean r and slope
 mean_r = []
 std_r = []
@@ -86,7 +83,7 @@ c2 = '#616E96'
 c3 = '#F8A557'
 c4 = '#3CBEDD'
 
-labels = windows
+labels = np.array((2, 3, 4, 5, 6, 7, 8, 9, 10))
 bp1 = ax1.boxplot(r_values[0:9], showfliers=False, patch_artist=True)
 bp2 = ax2.boxplot(slope_values[0:9], showfliers=False, patch_artist=True)
 ax2.set_ylim(-0.35, 0.01)

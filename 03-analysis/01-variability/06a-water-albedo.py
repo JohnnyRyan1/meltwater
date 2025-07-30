@@ -13,8 +13,11 @@ import numpy as np
 import pandas as pd
 from scipy.signal import convolve2d
 
+# Define user
+user = 'johnnyryan'
+
 # Define path
-path1 = '/Users/jr555/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/data/'
+path1 = '/Users/' + user + '/Library/CloudStorage/OneDrive-DukeUniversity/research/hydrology/data/'
 
 # Define year
 year = str(2019)
@@ -80,17 +83,16 @@ df.to_csv(path1 + 'scales/water-area.csv', index=False)
 
 #%%
 
-# Define window size from 1 to 50 km
+# Define window size from 1 to 100 km
 windows = np.array((1, 2, 3, 4, 5, 6, 8, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90,
                     100))
-kernel_size = (windows[:-1] + windows[1:])**2
 
 # Define lists
 final_data_list = []
 
-for w in range(len(windows[:-1])):
+for w in range(len(windows)):
     
-    print('Window size is %.0f pixels' % ((windows[w] +  windows[w+1])**2))
+    print('Window size is %.1f km' % (((windows[w] +  windows[w]+1)*500)/1000))
 
     data_list = []
     
@@ -118,9 +120,9 @@ for w in range(len(windows[:-1])):
             
             # Define window
             x0 = np.maximum(coords[0]-windows[w], 0)
-            x1 = coords[0]+windows[w+1]
+            x1 = coords[0]+windows[w] + 1
             y0 = np.maximum(coords[1]-windows[w], 0)
-            y1 = coords[1]+windows[w+1]
+            y1 = coords[1]+windows[w] + 1
                     
             # Identify nearest neighbors
             neighbors = np.array(sw[:,:,0][x0:x1,y0:y1]).flatten()
@@ -163,25 +165,10 @@ df = pd.DataFrame(stats_list)
 # Export
 df.to_csv(path1 + 'scales/water-2000.csv', index=False)
 
+#%%
+
+
     
-#%%
-
-# Make a DataFrame
-df = pd.DataFrame(data_list)
-df.columns = ['y', 'x', 'std', 'mean_albedo', 'intercept', 'slope', 'r', 'p', 'elevation']
-df['elevation'] = df['elevation'].astype(float)
-
-# Filter
-df = df[df['slope'] < 0]
-df = df[df['p'] < 0.001]
-
-df.to_csv(path1 + 'albedo-effects-' + year + '.csv')
-
-
-#%%
-
-
-
-
+    
 
 
