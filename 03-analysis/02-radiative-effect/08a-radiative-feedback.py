@@ -339,7 +339,6 @@ source_df_e3.to_csv(path1 + 'dataframes/regions_max.csv')
 source_df_f = df[['energy_feedback', 'energy_feedback_min', 'energy_feedback_max']]
 source_df_f.to_csv(path1 + 'dataframes/feedback.csv')
 
-#%%
 
 #%%
 
