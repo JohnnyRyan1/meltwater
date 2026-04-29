@@ -2,7 +2,7 @@
 
 This repository contains the code and data references for the article:
 
-> Ryan, J. C., Cooper, M. G., Cooley, S. W., Rennermalm, Å. K., & Smith, L. C., **Meltwater ponding has an underestimated radiative effect on the surface of the Greenland Ice Sheet**. *Nat Commun* 16, 8274 (2025). [https://doi.org/10.1038/s41467-025-62503-5](https://doi.org/10.1038/s41467-025-62503-5)
+> Ryan, J. C., Cooper, M. G., Cooley, S. W., Rennermalm, Å. K., & Smith, L. C., **Meltwater ponding has an underestimated radiative effect on the surface of the Greenland Ice Sheet**. *Nature Communications* 16, 8274 (2025). [https://doi.org/10.1038/s41467-025-62503-5](https://doi.org/10.1038/s41467-025-62503-5)
 
 ## 🧊 Summary
 
